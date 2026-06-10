@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kline Scanner Dashboard</title>
+<link rel="stylesheet" href="/t/css/style.css">
+</head>
+<body>
+
+<div class="debug-bar">
+  <span class="label">币安</span> <span class="val" id="dbg-binance">—</span>
+  <span class="sep">|</span>
+  <span class="label">API</span> <span class="val" id="dbg-gaps">—</span>
+  <span class="sep">|</span>
+  <span class="label">DB</span> <span class="val" id="dbg-db">—</span>
+  <span class="sep">|</span>
+  <span class="label">计算</span> <span class="val" id="dbg-compute">—</span>
+  <span class="sep">|</span>
+  <span class="label">渲染</span> <span class="val" id="dbg-render">—</span>
+  <span class="sep">|</span>
+  <span class="label">总计</span> <span class="val" id="dbg-total">—</span>
+  <span class="sep">|</span>
+  <span class="label">数据</span> <span class="val" id="dbg-count">—</span>
+  <span class="sep">|</span>
+  <span class="label">流量</span> <span class="val" id="dbg-traffic">0 KB</span>
+</div>
+
+<div class="header">
+  <div class="header-left">
+    <h1>📊 Kline Scanner</h1>
+
+    <div class="stepper-wrap" id="stepper-wrap">
+      <div class="stepper-trigger">
+        <span>扫描间隔</span>
+        <span class="val stepper-val-display">15m</span>
+      </div>
+      <div class="stepper-card" id="stepper-card">
+        <div class="stepper-inner">
+          <div class="stepper-ring">
+            <svg viewBox="0 0 80 80">
+              <circle class="bg" cx="40" cy="40" r="34"/>
+              <circle class="fg" id="stepper-fg" cx="40" cy="40" r="34"
+                stroke-dasharray="213.6" stroke-dashoffset="0"/>
+            </svg>
+            <div class="stepper-val" id="stepper-val">15m</div>
+          </div>
+          <div class="stepper-label">扫描间隔</div>
+          <div class="stepper-hint">🖱 滚轮调节 · 1~240 分钟</div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="stepper-wrap" id="delta-stepper-wrap">
+      <div class="stepper-trigger">
+        <span>波动阈值</span>
+        <span class="val stepper-val-display">2.0%</span>
+      </div>
+      <div class="stepper-card" id="delta-stepper-card">
+        <div class="stepper-inner">
+          <div class="stepper-ring">
+            <svg viewBox="0 0 80 80">
+              <circle class="bg" cx="40" cy="40" r="34"/>
+              <circle class="fg" id="delta-stepper-fg" cx="40" cy="40" r="34"
+                stroke-dasharray="213.6" stroke-dashoffset="0" style="stroke:var(--red)"/>
+            </svg>
+            <div class="stepper-val" id="delta-stepper-val">2.0</div>
+          </div>
+          <div class="stepper-label">波动阈值 (%)</div>
+          <div class="stepper-hint">🖱 滚轮调节 · 0.5~10.0%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stepper-wrap" id="engulf-stepper-wrap">
+      <div class="stepper-trigger">
+        <span>吞没倍数</span>
+        <span class="val stepper-val-display">1.0</span>
+      </div>
+      <div class="stepper-card" id="engulf-stepper-card">
+        <div class="stepper-inner">
+          <div class="stepper-ring">
+            <svg viewBox="0 0 80 80">
+              <circle class="bg" cx="40" cy="40" r="34"/>
+              <circle class="fg" id="engulf-stepper-fg" cx="40" cy="40" r="34"
+                stroke-dasharray="213.6" stroke-dashoffset="0" style="stroke:var(--orange)"/>
+            </svg>
+            <div class="stepper-val" id="engulf-stepper-val">1.0</div>
+          </div>
+          <div class="stepper-label">吞没倍数</div>
+          <div class="stepper-hint">🖱 滚轮调节 · 1.0~10.0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats">
+      <span>品种: <span id="stat-total">-</span></span>
+      <span>有数据: <span id="stat-data">-</span></span>
+      <span>缺线: <span id="stat-nodata">-</span></span>
+      <span>穿越: <span id="stat-pierced">-</span></span>
+      <span>选中: <span id="stat-selected" style="color:var(--blue);">—</span></span>
+    </div>
+  </div>
+
+  <button class="btn-scan" id="btn-scan" onclick="toggleScan()">
+    ▶ 启动扫描
+  </button>
+</div>
+
+<div class="main">
+  <div class="panel">
+    <div class="panel-header" style="color: var(--green);">
+      <span class="dot" style="background:var(--green);"></span>
+      🟢 支撑差距排序
+      <span class="count" id="count-support">-</span>
+    </div>
+    <div class="panel-body" id="body-support">
+      <div class="empty-state">点击「启动扫描」开始</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header" style="color: var(--red);">
+      <span class="dot" style="background:var(--red);"></span>
+      🔴 压力差距排序
+      <span class="count" id="count-resistance">-</span>
+    </div>
+    <div class="panel-body" id="body-resistance">
+      <div class="empty-state">点击「启动扫描」开始</div>
+    </div>
+  </div>
+</div>
+
+<div class="snackbar" id="snackbar"></div>
+
+<script type="module" src="/t/js/0364f57f.js"></script>
+
+</body>
+</html>

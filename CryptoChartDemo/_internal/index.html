@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>回测系统 - K线图表</title>
+    <link rel="icon" href="favicon.ico">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/indicator-panel.css">
+    <link rel="stylesheet" href="css/time-machine.css">
+    <link rel="stylesheet" href="css/sim-trading.css">
+    <link rel="stylesheet" href="css/float-msg.css">
+    <link rel="stylesheet" href="css/symbol-search.css">
+    <link rel="stylesheet" href="css/debug-panel.css">
+    <link rel="stylesheet" href="css/indicator-selector.css">
+    <link rel="stylesheet" href="css/floating-stepper.css">
+</head>
+<body>
+<div class="app">
+    <!-- 左侧：图表区域 -->
+    <div class="chart-area">
+        <div class="chart-split" id="chartSplit" data-layout="1">
+            <div class="chart-col active" id="col0" data-col="0">
+                <div id="chart0" class="chart-container"></div>
+            </div>
+            <div class="chart-col" id="col1" data-col="1" style="display:none;">
+                <div id="chart1" class="chart-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 右侧：工具栏（回测、指标、线段等） -->
+    <div class="toolbar">
+        <div class="toolbar-header">
+            <span>Crypto View</span>
+            <div style="display:flex;gap:4px;">
+                <button id="layoutToggleBtn" title="切换图表布局" style="padding:4px 8px;font-size:12px;">📐 1图</button>
+                <button id="toolbarCollapseBtn" title="隐藏工具栏" style="padding:4px 7px;font-size:12px;background:transparent;border:1px solid var(--border-color);border-radius:4px;color:var(--text-secondary);cursor:pointer;">◀</button>
+            </div>
+        </div>
+        <div class="toolbar-content">
+            <!-- 品种 & 周期 -->
+        <div class="form-group">
+            <label>品种</label>
+            <div style="display: flex; gap: 8px;">
+                <input type="text" id="symbolInput" value="BTCUSDT" placeholder="搜索品种...">
+                <button id="switchSymbolBtn">切换</button>
+            </div>
+        </div>
+            <div class="form-group">
+                <div style="display:flex;align-items:center;justify-content:space-between;">
+                    <label style="margin:0;">周期</label>
+                    <button id="repairGapsBtn" title="修复当前周期数据缺口" style="padding:3px 8px;font-size:11px;background:#5a3a3a;color:#ff9800;border:1px solid #7d5a2e;border-radius:4px;cursor:pointer;">🔧 修复K线缺口</button>
+                </div>
+                    <div class="interval-buttons">
+                        <button class="interval-btn" data-interval="15m">15m</button>
+                        <button class="interval-btn" data-interval="1h">1h</button>
+                        <button class="interval-btn" data-interval="4h" id="defaultIntervalBtn">4h</button>
+                        <button class="interval-btn" data-interval="1d">1d</button>
+                        <button class="interval-btn" data-interval="3d">3d</button>
+                        <button class="interval-btn" data-interval="1w">1w</button>
+                        <button class="interval-btn" data-interval="1M">1M</button>
+                    </div>
+            </div>
+            <div class="form-group" style="gap:4px;">
+                <label>画线（可拖拽编辑，右键删除）</label>
+                <div class="button-group" style="gap:4px;">
+                    <button id="drawSupportBtnV2"><span class="draw-icon trend-up"></span>支撑趋势</button>
+                    <button id="drawResistanceBtnV2"><span class="draw-icon trend-down"></span>压力趋势</button>
+                </div>
+                <div class="button-group" style="gap:4px;margin-top:0;">
+                    <button id="drawSupportHBtn"><span class="draw-icon hline-s"></span>水平支撑</button>
+                    <button id="drawResistanceHBtn"><span class="draw-icon hline-r"></span>水平压力</button>
+                </div>
+            </div>
+            <!-- 分隔线 -->
+            <div class="divider"></div>
+
+            <div class="form-group">
+                <label>📊 指标</label>
+                <button id="addIndicatorBtn" style="width:100%;">➕ 添加指标</button>
+            </div>
+
+            <div style="display:flex;gap:6px;margin-bottom:12px;">
+                <button id="openScannerBtn" title="打开扫描面板"
+                    style="flex:1;padding:7px 10px;font-size:12px;font-weight:600;
+                           background:linear-gradient(135deg,#1a3a2a,#0d2137);color:#4fc3f7;
+                           border:1px solid #2a5a4a;border-radius:4px;cursor:pointer;transition:all .2s;"
+                    onmouseover="this.style.borderColor='#4fc3f7';this.style.boxShadow='0 0 8px rgba(79,195,247,.3)'"
+                    onmouseout="this.style.borderColor='#2a5a4a';this.style.boxShadow='none'">🔍 扫描面板</button>
+                <a href="https://www.bsmkweb.cc/register?ref=ZOZFS89O" target="_blank" rel="noopener"
+                    class="btn-binance-ad"
+                    title="凭注册截图可享7折，已购买的可退百分之30费用"
+                    style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px;
+                           padding:7px 10px;font-size:12px;font-weight:700;
+                           background:linear-gradient(135deg,#2a1f0e,#3d2e0e);color:#f0b90b;
+                           border:1px solid #5a4a1a;border-radius:4px;text-decoration:none;">🚀 点我注册币安</a>
+            </div>
+
+            <div class="status-card">
+                <div class="status-label">📡 状态</div>
+                <div id="status" class="status-text">就绪</div>
+                <div class="status-label" style="margin-top: 8px;">📊 数据信息</div>
+                <!-- 调试信息面板，悬停显示说明 -->
+                <div class="debug-panel" style="margin-top:8px;">
+                    <div id="debugInfo" class="status-text"></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>⏰ 时光机</label>
+                <button id="selectLossBtn" style="width:100%;margin-bottom:6px;">📋 选择亏损仓位记录</button>
+                <button id="backtestBtn" disabled>▶️ 运行时光机</button>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="form-group" id="simSection" style="display:none;">
+                <label>📈 模拟交易 <span style="font-weight:400;color:#888;font-size:11px;">总权益 100U · 杠杆 10x</span></label>
+
+                <div style="display:flex;gap:6px;margin-bottom:6px;">
+                    <button id="simLongBtn"  style="flex:1;background:#0e3a1e;color:#4caf50;border:1px solid #2e7d32;">🟢 做多</button>
+                    <button id="simShortBtn" style="flex:1;background:#3a0e0e;color:#f44336;border:1px solid #7d2e2e;">🔴 做空</button>
+                </div>
+
+                <div style="display:flex;gap:6px;margin-bottom:6px;">
+                    <div style="flex:1;position:relative;">
+                        <span class="sl-tp-label sl-label">🛑 止损</span>
+                        <input type="number" id="simStopLoss" placeholder="价格" step="any" class="sl-input">
+                    </div>
+                    <div style="flex:1;position:relative;">
+                        <span class="sl-tp-label tp-label">🎯 止盈</span>
+                        <input type="number" id="simTakeProfit" placeholder="价格" step="any" class="tp-input">
+                    </div>
+                </div>
+
+                <div style="margin-bottom:6px;">
+                    <div style="display:flex;justify-content:space-between;color:#aaa;font-size:10px;margin-bottom:2px;">
+                        <span>仓位比例</span><span id="simSizePct">50%</span>
+                    </div>
+                    <input type="range" id="simSizeSlider" min="0" max="100" value="50" step="1" style="width:100%;accent-color:#4fc3f7;">
+                    <div id="simQtyPreview" style="font-size:10px;color:#888;margin-top:2px;">预计 0 张</div>
+                </div>
+
+                <div style="display:flex;gap:6px;margin-bottom:6px;align-items:center;">
+                    <button id="simPlayBtn" style="flex:1;font-size:13px;padding:8px;">▶ 播放</button>
+                    <input type="number" id="simBarsPerClick" value="1" min="1" max="1000" step="1"
+                           title="每次播放根数"
+                           style="width:48px;padding:8px 4px;text-align:center;font-size:12px;background:#1e2130;color:#d1d4dc;border:1px solid #3a3f55;border-radius:4px;">
+                </div>
+
+                <!-- 账户摘要 -->
+                <div id="simAccount" class="sim-account-summary" style="display:none;">
+                    <div class="sim-account-row"><span>可用余额</span><span id="simAvailableBalance">100.00 USDT</span></div>
+                    <div class="sim-account-row"><span>已用保证金</span><span id="simMarginUsed">0.00 USDT</span></div>
+                    <div class="sim-account-row"><span>总权益</span><span id="simTotalEquity" style="color:#4fc3f7;">100.00 USDT</span></div>
+                </div>
+                <!-- 多仓位订单卡 -->
+                <div id="simPositions" class="sim-positions-container"></div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div id="floatMsgContainer"></div>
+
+<script src="js/lightweight-charts.standalone.development.js"></script>
+<script src="js/lightweight-charts-drawing.umd.js"></script>
+<script type="module" src="js/7a9076d6.js"></script>
+<div id="debugTooltip" class="debug-tooltip">
+    <div class="tip-row"><span class="tip-label chart">图表</span>画布当前渲染的K线数量及估算内存占用</div>
+    <div class="tip-row"><span class="tip-label db">DB</span>从本地数据库读取的K线条数 · 查询耗时 · 读取时间点</div>
+    <div class="tip-row"><span class="tip-label bn">BN</span>从币安API拉取的K线条数 · 请求耗时 · 显示"超时"表示请求失败</div>
+</div>
+</body>
+</html>
