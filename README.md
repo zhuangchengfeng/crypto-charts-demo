@@ -16,6 +16,7 @@
 - 本项目为DEMO阉割版本,于完整版本使用的工具不一样
 - 下载后在文件夹里双击start.bat等待启动网页即可,默认端口5000
 - 
-<img width="1915" height="953" alt="3" src="https://github.com/user-attachments/assets/b23a1275-f5dc-4037-bda0-7bf7f081e1a3" />
-<img width="1917" height="961" alt="2" src="https://github.com/user-attachments/assets/f6926ce9-cbc6-44df-b1af-b09e6335d8b1" />
-<img width="1903" height="955" alt="1" src="https://github.com/user-attachments/assets/af94b6d2-0f8a-47de-8e7a-989a166e77c6" />
+<img width="1915" height="953" alt="截图1" src="images/1.png" />
+<img width="1917" height="961" alt="截图2" src="images/2.png" />
+<img width="1903" height="955" alt="截图3" src="images/3.png" />
+<img width="1903" height="955" alt="截图4" src="images/6.png" />
